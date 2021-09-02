@@ -100,6 +100,12 @@ async function handleCreateRace() {
     console.log(`Something went wrong, ${error}`)
   })
 
+  /*
+   * Know BUG!!!
+   * we have to subtract 1 to the race_id to provide the correct race_id
+   * https://github.com/udacity/nd032-c3-asynchronous-programming-with-javascript-project-starter/issues/6
+   */
+
   await startRace(store.race_id - 1).catch((error) => {
     console.log(`Something went wrong, ${error}`)
   })
@@ -131,7 +137,7 @@ async function runCountdown() {
       const decrement = () => {
         --timer
         // run this DOM manipulation to decrement the countdown for the user
-        document.getElementById('big-numbers').innerHTML = --timer
+        document.getElementById('big-numbers').innerHTML = timer
         if (timer === 0) {
           clearInterval(countDown)
           resolve()
@@ -246,6 +252,10 @@ function renderCountdown(count) {
 }
 
 function renderRaceStartView(track) {
+  /*
+   * Track name is always 'Track 1' which seems to be a known bug
+   * https://github.com/udacity/nd032-c3-asynchronous-programming-with-javascript-project-starter/issues/14
+   */
   return `
 		<header>
 			<h1>Race: ${track.name}</h1>
