@@ -16,6 +16,19 @@ const updateStore = (newState) => {
   return store
 }
 
+const wackyRaceTeam = [
+  'Dastardly & Muttley',
+  'Penelope Pitstop',
+  'Rock Slag',
+  'the gruesome twosome',
+  'professor pat',
+]
+const customRacersName = (arr, customNameArr) =>
+  arr.map((item, index) => {
+    item.driver_name = customNameArr[index]
+    return item
+  })
+
 // We need our javascript to wait until the DOM is loaded
 document.addEventListener('DOMContentLoaded', function () {
   onPageLoad()
@@ -30,6 +43,7 @@ async function onPageLoad() {
     })
 
     getRacers().then((racers) => {
+      console.log('reload', racers)
       const html = renderRacerCars(racers)
       renderAt('#racers', html)
     })
@@ -117,6 +131,7 @@ function runRace(raceID) {
   return new Promise((resolve) => {
     const progressCheck = async () => {
       const res = await getRace(raceID)
+      console.log('res', res)
       renderAt('#leaderBoard', raceProgress(res.positions))
       if (res.status === 'finished') {
         clearInterval(raceInterval) // to stop the interval from repeating
@@ -196,7 +211,9 @@ function renderRacerCars(racers) {
 		`
   }
 
-  const results = racers.map(renderRacerCard).join('')
+  const results = customRacersName(racers, wackyRaceTeam)
+    .map(renderRacerCard)
+    .join('')
 
   return `
 		<ul id="racers">
@@ -208,8 +225,20 @@ function renderRacerCars(racers) {
 function renderRacerCard(racer) {
   const {id, driver_name, top_speed, acceleration, handling} = racer
 
+  const imageMap = {
+    'Dastardly & Muttley': 'dastardly.jpeg',
+    'Penelope Pitstop': 'penelope.jpeg',
+    'Rock Slag': 'rock-slag.jpeg',
+    'the gruesome twosome': 'gruesome.jpeg',
+    'professor pat': 'professor.jpeg',
+  }
+  const imageSrc = `../assets/images/${imageMap[driver_name]}`
+
   return `
 		<li class="card podracer" id="${id}">
+    <div class='img-holder'>
+     <image src=${imageSrc} />
+    </div>
 			<h3>${driver_name}</h3>
 			<p>${top_speed}</p>
 			<p>${acceleration}</p>
@@ -284,27 +313,33 @@ function resultsView(positions) {
 		</header>
 		<main>
 			${raceProgress(positions)}
-			<a href="/race">Start a new race</a>
+			<a class="cta-btn" href="/race">Start a new race</a>
 		</main>
 	`
 }
 
 function raceProgress(positions) {
-  let userPlayer = positions.find((e) => e.id === parseInt(store.player_id))
+  console.log('positions', positions)
+  let userPlayer = customRacersName(positions, wackyRaceTeam).find(
+    (e) => e.id === parseInt(store.player_id),
+  )
+
   userPlayer.driver_name += ' (you)'
 
   positions = positions.sort((a, b) => (a.segment > b.segment ? -1 : 1))
   let count = 1
 
-  const results = positions.map((p) => {
-    return `
+  const results = positions
+    .map((p) => {
+      return `
 			<tr>
 				<td>
 					<h3>${count++} - ${p.driver_name}</h3>
 				</td>
 			</tr>
 		`
-  })
+    })
+    .join('')
 
   return `
 		<main>
