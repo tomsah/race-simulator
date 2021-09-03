@@ -71,3 +71,18 @@ form li.card.podracer h3 {
   animation: none;
   opacity: 0.4;
 }
+
+/* -------------------  TABLET  --------------------- */
+@media (min-width: 768px) {
+  .cards-list#racers {
+    justify-content: center;
+  }
+}
+
+/* -------------------  DESKTOP  -------------------- */
+
+@media (min-width: 1224px) {
+  .cards-list#tracks {
+    justify-content: center;
+  }
+}

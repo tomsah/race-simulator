@@ -25,7 +25,7 @@ header {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  height: 50vh;
+  height: 70vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -110,10 +110,6 @@ section {
   animation: pulse 1.5s infinite;
 }
 
-.foo {
-  width: 100%;
-}
-
 .cta-btn:hover {
   animation: none;
 }
@@ -134,26 +130,3 @@ footer {
   height: 200px;
   background-color: black;
 }
-
-/* -------------------  TABLET  --------------------- */
-/* @media (min-width: 768px) {
-  header {
-    height: 100vh;
-  }
-} */
-
-/* -------------------  DESKTOP  -------------------- */
-
-/* @media (min-width: 1224px) {
-  header {
-    height: 700px;
-  }
-} */
-
-/* -------------------  LARGE SCREENS  -------------- */
-
-/* @media (min-width: 1824px) {
-  header {
-    height: 700px;
-  }
-} */

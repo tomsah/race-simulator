@@ -6,17 +6,18 @@ header {
 }
 
 main#two-columns {
-  margin: 50px 0;
-  display: flex;
+  margin: 10px 0;
+  display: block;
 }
 
 main#two-columns section {
-  max-width: 50vw;
+  width: 90vw;
 }
 
 section#accelerate button {
-  height: 300px;
-  width: 300px;
+  height: 150px;
+  width: 150px;
+  display: block;
   margin: 30px auto;
   border-radius: 180%;
   background-color: green;
@@ -29,7 +30,7 @@ section#accelerate button {
   font-size: 70px;
 }
 
-.progress-leaderBoard {
+.progress-leaderBoard h3 {
   text-align: left;
 }
 
@@ -68,14 +69,14 @@ section#accelerate button {
 
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 768px) {
-}
-
-/* -------------------  DESKTOP  -------------------- */
-
-@media (min-width: 1224px) {
-}
-
-/* -------------------  LARGE SCREENS  -------------- */
-
-@media (min-width: 1824px) {
+  main#two-columns {
+    display: flex;
+  }
+  main#two-columns section {
+    width: 50vw;
+  }
+  section#accelerate button {
+    height: 300px;
+    width: 300px;
+  }
 }
