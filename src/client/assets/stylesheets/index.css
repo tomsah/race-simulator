@@ -110,6 +110,10 @@ section {
   animation: pulse 1.5s infinite;
 }
 
+.foo {
+  width: 100%;
+}
+
 .cta-btn:hover {
   animation: none;
 }

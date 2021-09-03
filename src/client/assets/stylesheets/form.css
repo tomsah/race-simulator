@@ -49,8 +49,25 @@ form li.card.podracer h3 {
   align-items: center;
 }
 
-form li.card.podracer .img-holder {
+.img-holder {
   height: 105px;
   display: flex;
   align-items: center;
+}
+
+.card.track {
+  width: 150px;
+  margin: 0 10px;
+  padding: 20px 0;
+}
+
+.card.track h3 {
+  height: 100px;
+}
+
+.start-race:disabled {
+  background: gray;
+  cursor: default;
+  animation: none;
+  opacity: 0.4;
 }

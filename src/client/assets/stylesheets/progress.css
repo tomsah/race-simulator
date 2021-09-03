@@ -29,6 +29,43 @@ section#accelerate button {
   font-size: 70px;
 }
 
+.progress-leaderBoard {
+  text-align: left;
+}
+
+.track-progress {
+  height: 45px;
+  width: 100%;
+  background: white;
+  display: flex;
+  border: 3px solid white;
+  background: black;
+  align-items: center;
+  position: relative;
+}
+
+.track-separation {
+  border: dashed 1px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  justify-items: center;
+  width: 100%;
+  align-content: center;
+  border-color: yellow;
+  height: 1px;
+}
+
+.track-progress img {
+  width: 50px;
+  border-radius: 100%;
+  transform: translate3d(0, 0, 0);
+  transition: transform 1s ease;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  position: absolute;
+}
+
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 768px) {
 }

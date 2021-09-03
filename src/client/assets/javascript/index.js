@@ -23,6 +23,24 @@ const wackyRaceTeam = [
   'the gruesome twosome',
   'professor pat',
 ]
+
+const imageMap = {
+  'Dastardly & Muttley': 'dastardly.jpeg',
+  'Penelope Pitstop': 'penelope.jpeg',
+  'Rock Slag': 'rock-slag.jpeg',
+  'the gruesome twosome': 'gruesome.jpeg',
+  'professor pat': 'professor.jpeg',
+}
+
+const raceMap = {
+  'race-1': 'Speeding for Smogland',
+  'race-2': 'Creepy trip to lemon twist',
+  'race-3': 'Overseas Hi-way race',
+  'race-4': 'The Speedy Arkansas traveller',
+  'race-5': 'The Carlsbad or bust bash',
+  'race-6': 'Hot race at chillicothe',
+}
+
 const customRacersName = (arr, customNameArr) =>
   arr.map((item, index) => {
     item.driver_name = customNameArr[index]
@@ -43,7 +61,6 @@ async function onPageLoad() {
     })
 
     getRacers().then((racers) => {
-      console.log('reload', racers)
       const html = renderRacerCars(racers)
       renderAt('#racers', html)
     })
@@ -57,7 +74,16 @@ function setupClickHandlers() {
   document.addEventListener(
     'click',
     function (event) {
+      let parent = event.target.parentElement
       const {target} = event
+
+      if (parent.matches('.card.track')) {
+        handleSelectTrack(parent)
+      }
+
+      if (parent.matches('.card.podracer')) {
+        handleSelectPodRacer(parent)
+      }
 
       // Race track form field
       if (target.matches('.card.track')) {
@@ -66,13 +92,13 @@ function setupClickHandlers() {
 
       // Podracer form field
       if (target.matches('.card.podracer')) {
+        event.stopPropagation()
         handleSelectPodRacer(target)
       }
 
       // Submit create race form
       if (target.matches('#submit-create-race')) {
         event.preventDefault()
-
         // start race
         handleCreateRace()
       }
@@ -127,12 +153,23 @@ async function handleCreateRace() {
   await runRace(store.race_id - 1)
 }
 
+const carAnimation = (arr) => {
+  const imgList = document.querySelectorAll('#carList img')
+  imgList.forEach((item) => {
+    arr.forEach((elm) => {
+      if (elm.driver_name.includes(item.id)) {
+        item.style.transform = `translateX(${(elm.segment / 201) * 500}%)`
+      }
+    })
+  })
+}
+
 function runRace(raceID) {
   return new Promise((resolve) => {
     const progressCheck = async () => {
       const res = await getRace(raceID)
-      console.log('res', res)
       renderAt('#leaderBoard', raceProgress(res.positions))
+      carAnimation(res.positions)
       if (res.status === 'finished') {
         clearInterval(raceInterval) // to stop the interval from repeating
         renderAt('#race', resultsView(res.positions)) // to render the results view
@@ -177,7 +214,9 @@ function handleSelectPodRacer(target) {
 
   // add class selected to current target
   target.classList.add('selected')
-
+  if (store.track_id && target.id) {
+    document.getElementById('submit-create-race').disabled = false
+  }
   updateStore({player_id: target.id})
 }
 
@@ -192,7 +231,9 @@ function handleSelectTrack(target) {
 
   // add class selected to current target
   target.classList.add('selected')
-
+  if (store.player_id && target.id) {
+    document.getElementById('submit-create-race').disabled = false
+  }
   updateStore({track_id: target.id})
 }
 
@@ -225,13 +266,6 @@ function renderRacerCars(racers) {
 function renderRacerCard(racer) {
   const {id, driver_name, top_speed, acceleration, handling} = racer
 
-  const imageMap = {
-    'Dastardly & Muttley': 'dastardly.jpeg',
-    'Penelope Pitstop': 'penelope.jpeg',
-    'Rock Slag': 'rock-slag.jpeg',
-    'the gruesome twosome': 'gruesome.jpeg',
-    'professor pat': 'professor.jpeg',
-  }
   const imageSrc = `../assets/images/${imageMap[driver_name]}`
 
   return `
@@ -264,11 +298,15 @@ function renderTrackCards(tracks) {
 }
 
 function renderTrackCard(track) {
-  const {id, name} = track
-
+  const {id} = track
+  const imgSrc = `../assets/images/race-${id}.jpeg`
+  const raceName = raceMap[`race-${id}`]
   return `
 		<li id="${id}" class="card track">
-			<h3>${name}</h3>
+			<h3>${raceName}</h3>
+      <div class='img-holder'>
+        <img src=${imgSrc} />
+      </div>
 		</li>
 	`
 }
@@ -278,6 +316,20 @@ function renderCountdown(count) {
 		<h2>Race Starts In...</h2>
 		<p id="big-numbers">${count}</p>
 	`
+}
+
+function renderRaceTrack(playerList, imageList) {
+  return playerList
+    .map((p) => {
+      const imageSrc = `../assets/images/${imageList[p]}`
+      return `
+      <li class='track-progress'>
+        <img src=${imageSrc} id='${p}'/>
+      <div class='track-separation'></div>
+      </li>
+    `
+    })
+    .join('')
 }
 
 function renderRaceStartView(track) {
@@ -290,9 +342,17 @@ function renderRaceStartView(track) {
 			<h1>Race: ${track.name}</h1>
 		</header>
 		<main id="two-columns">
-			<section id="leaderBoard">
+			<section >
+      <div id="leaderBoard">
 				${renderCountdown(3)}
+      </div>
+      <div>
+        <ul id='carList'>
+          ${renderRaceTrack(wackyRaceTeam, imageMap)}
+        </ul>
+      </div>
 			</section>
+
 
 			<section id="accelerate">
 				<h2>Directions</h2>
@@ -319,11 +379,9 @@ function resultsView(positions) {
 }
 
 function raceProgress(positions) {
-  console.log('positions', positions)
   let userPlayer = customRacersName(positions, wackyRaceTeam).find(
     (e) => e.id === parseInt(store.player_id),
   )
-
   userPlayer.driver_name += ' (you)'
 
   positions = positions.sort((a, b) => (a.segment > b.segment ? -1 : 1))
@@ -344,9 +402,9 @@ function raceProgress(positions) {
   return `
 		<main>
 			<h3>Leaderboard</h3>
-			<section id="leaderBoard">
+			<section class='progress-leaderBoard' id="leaderBoard">
 				${results}
-			</section>
+      </section>
 		</main>
 	`
 }
